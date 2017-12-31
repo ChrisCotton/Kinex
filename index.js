@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
-const port = process.env.port || 3000;
 const app = express();
 
 app.use(logger('dev'));
@@ -16,8 +15,7 @@ app.use(cookieParser());
 
 app.use('/', index);
 
-app.listen(port, () => {
-	console.log(`Server listening on port ${port}`);
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
 
 module.exports = app;

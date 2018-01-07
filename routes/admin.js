@@ -4,8 +4,38 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const Project = mongoose.model('Project');
 const passport = require('passport');
+
 const requireAuth = passport.authenticate('jwt', { session: false });
 const requireAdmin = require('../middleware/requireAdmin');
+
+router.post('/createUser', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+  const { username, password, firstName, lastName, isAdmin } = req.body;
+  const newUser = new User({ username, password, firstName, lastName, isAdmin });
+
+  if(!username || !firstName || !lastName){
+  	return res.status(422).send({ error: 'You must fill in all the required fields.' });
+  }
+
+	try {
+		const existingUser = await User.findOne({ username });
+		if(existingUser){
+			return res.status(422).send({ error: 'Username already in use.' });
+		}
+	} catch (err){
+		next(err);
+	}
+
+	try {
+		const saved = await newUser.save();
+		res.status(200);
+		res.json({ message: 'Your account was registered!' });
+		return true;
+	} catch(err) {
+		console.log(err);
+		console.log(`Internal Server Error, User.save(${JSON.stringify(newUser)})`);
+		return false;
+	}
+});
 
 router.get('/projects', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
 	Project.find({ owner: req.user._id })

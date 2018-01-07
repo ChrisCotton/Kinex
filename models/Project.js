@@ -18,12 +18,11 @@ projectSchema.methods.addCollaborators = function(userIds){
 
 		resolve(this.save());
 	})
-	
 }
 
 // projectSchema.methods.removeCollaborators = function(users){
 // 	return new Promise((resolve, reject) => {
-		
+
 // 	})
 // }
 

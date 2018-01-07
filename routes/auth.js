@@ -6,16 +6,14 @@ const jwt = require('jsonwebtoken');
 const { secret } = require('../config/keys');
 const passport = require('passport');
 
-const requireAuth = passport.authenticate('jwt', { session: false });
-const requireAdmin = require('../middleware/requireAdmin');
-
 function tokenForUser(user){
 	const timestamp = new Date().getTime();
 	return jwt.sign({ sub: user._id, iat: timestamp }, secret);
 }
 
-router.post('/signUp', requireAdmin('isAdmin'), requireAuth, async (req, res, next) => {
+router.post('/signUp', async (req, res, next) => {
   const { username, password, firstName, lastName, isAdmin } = req.body;
+  console.log(req.body);
   const newUser = new User({ username, password, firstName, lastName, isAdmin });
 
   if(!username || !firstName || !lastName){
@@ -41,7 +39,6 @@ router.post('/signUp', requireAdmin('isAdmin'), requireAuth, async (req, res, ne
 		console.log(`Internal Server Error, User.save(${JSON.stringify(newUser)})`);
 		return false;
 	}
-
 });
 
 router.post('/signIn', async (req, res, next) => {

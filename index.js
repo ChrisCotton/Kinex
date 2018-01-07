@@ -17,6 +17,7 @@ mongoose.connect(keys.mongoURI, (err) => {
 	else console.log("Successfully connected to MongoDB");
 });
 
+//Routes
 const index = require('./routes/index');
 const auth = require('./routes/auth');
 const admin = require('./routes/admin');

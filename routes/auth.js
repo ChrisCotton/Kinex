@@ -6,12 +6,15 @@ const jwt = require('jsonwebtoken');
 const { secret } = require('../config/keys');
 const passport = require('passport');
 
+const requireAuth = passport.authenticate('jwt', { session: false });
+const requireAdmin = require('../middleware/requireAdmin');
+
 function tokenForUser(user){
 	const timestamp = new Date().getTime();
 	return jwt.sign({ sub: user._id, iat: timestamp }, secret);
 }
 
-router.post('/signUp', async (req, res, next) => {
+router.post('/signUp', requireAdmin('isAdmin'), requireAuth, async (req, res, next) => {
   const { username, password, firstName, lastName, isAdmin } = req.body;
   const newUser = new User({ username, password, firstName, lastName, isAdmin });
 

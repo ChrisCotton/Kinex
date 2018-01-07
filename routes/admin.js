@@ -1,18 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const User = mongoose.model('User');
 const Project = mongoose.model('Project');
 const passport = require('passport');
 const requireAuth = passport.authenticate('jwt', { session: false });
 const requireAdmin = require('../middleware/requireAdmin');
 
-router.get('/test', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
-	res.send("Authorized");
+router.get('/projects', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
+	Project.find({ owner: req.user._id })
+	.then(result => res.send(result))
+	.catch(err => next(err));
 })
+
+router.delete('/deleteUsers', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	const { users } = req.body;
+
+	try {
+		const user = await User.remove({ _id: { $in: users } });
+		res.status(200).send(user);
+	} catch(err){
+		res.status(404).send(err);
+	}
+});
 
 router.post('/create', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
 	const { title, type, abbreviation, description } = req.body;
-	const newProject = new Project({ title, type, abbreviation, description });
+	const newProject = new Project({ title, type, abbreviation, description, owner: req.user._id });
 
 	if(!title || !type || !abbreviation || !description){
 		return res.status(422);
@@ -24,32 +38,59 @@ router.post('/create', requireAuth, requireAdmin('isAdmin'), async (req, res, ne
 		res.json({ message: `Project successfully created!` });
 	} catch(err) {
 		res.status(500).send({ error: 'Oops! Something went wrong.' });
-		return false;
 	}
 });
 
-router.put('/:projectId', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
+router.put('/:projectId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	const { projectId } = req.params;
+	const { title, type, abbreviation, description } = req.body;
 
+	try {
+		const project = await Project.findById(projectId);
+		project.title = title;
+
+		const saved = await project.save();
+		res.status(200).send(saved);
+	} catch(err){
+		res.status(500).send(err);
+	}
 });
 
-router.delete('/:projectId', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
+router.delete('/:projectId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	const { projectId } = req.params;
 
+	try {
+		const remove = await Project.findByIdAndRemove(projectId);
+		res.status(200).send(remove);
+	} catch(err){
+		res.status(404).send(err);
+	}
 });
 
-router.post('/addCollaborators/:projectId', requireAuth, (req, res, next) => {
+router.post('/addCollaborators/:projectId', requireAuth, async (req, res, next) => {
+	const { projectId } = req.params;
+	const { users } = req.body;
 
+	try {
+		const project = await Project.findById(projectId);
+		const added = await project.addCollaborators(users);
+		res.status(200).send(project);
+	} catch(err){
+		res.status(500).send({ error: 'Oops! Something went wrong.' });
+	}
 });
 
-router.delete('/removeCollaborators/:projectId', requireAuth, (req, res, next) => {
+router.delete('/removeCollaborators/:projectId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	const { projectId } = req.params;
+	const { users } = req.body;
 
-});
-
-router.delete('/removeUsers/:users', requireAuth, (req, res, next) => {
-
-});
-
-router.put('/updateUser/:userId', requireAuth, (req, res, next) => {
-
+	try {
+		const project = await Project.findById(projectId);
+		const updated = await project.update({ $pull: { collaborators: { $in: users }} }, { multi: true });
+		res.status(200).send(updated);
+	} catch(err){
+		res.status(404).send(err);
+	}
 });
 
 module.exports = router;

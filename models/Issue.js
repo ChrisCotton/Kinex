@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const issueSchema = new Schema({
-	issueType: String,
-	summary: String,
-	description: String,
+	issueType: { type: String, required: true },
+	summary: { type: String, required: true },
+	description: { type: String, required: true },
 	priority: { type: String, default: 'Medium' },
-	assignee: { type: Schema.Types.ObjectId, ref: 'User' },
+	assignee: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 	attachments: [{ data: Buffer, contentType: String }],
-	reporter: { type: Schema.Types.ObjectId, ref: 'User' },
-	project: { type: Schema.Types.ObjectId, ref: 'Project' }
+	reporter: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+	project: { type: Schema.Types.ObjectId, ref: 'Project', required: true }
 })
 
-mongoose.model('issues', issueSchema);
+mongoose.model('Issue', issueSchema);

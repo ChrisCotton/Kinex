@@ -11,6 +11,7 @@ const passport = require('passport');
 
 require('./models/User');
 require('./models/Project');
+require('./models/Issue');
 
 mongoose.connect(keys.mongoURI, (err) => {
 	if(err) throw err
@@ -19,8 +20,9 @@ mongoose.connect(keys.mongoURI, (err) => {
 
 //Routes
 const index = require('./routes/index');
-const auth = require('./routes/auth');
-const admin = require('./routes/admin');
+const auth = require('./routes/authRoute');
+const admin = require('./routes/adminRoute');
+const issue = require('./routes/issueRoute');
 
 const app = express();
 app.use(cors());
@@ -36,6 +38,7 @@ app.use(cookieParser());
 app.use('/', index);
 app.use('/auth', auth);
 app.use('/admin', admin);
+app.use('/issue', issue);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT);

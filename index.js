@@ -19,7 +19,6 @@ mongoose.connect(keys.mongoURI, (err) => {
 });
 
 //Routes
-const index = require('./routes/index');
 const auth = require('./routes/authRoute');
 const admin = require('./routes/adminRoute');
 const issue = require('./routes/issueRoute');
@@ -35,7 +34,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', index);
 app.use('/auth', auth);
 app.use('/admin', admin);
 app.use('/issue', issue);

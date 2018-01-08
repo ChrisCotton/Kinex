@@ -20,10 +20,4 @@ projectSchema.methods.addCollaborators = function(userIds){
 	})
 }
 
-// projectSchema.methods.removeCollaborators = function(users){
-// 	return new Promise((resolve, reject) => {
-
-// 	})
-// }
-
 mongoose.model('Project', projectSchema);

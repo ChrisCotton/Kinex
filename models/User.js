@@ -7,7 +7,7 @@ const userSchema = new Schema({
 	password: { type: String, required: true },
 	firstName: { type: String, required: true },
 	lastName: { type: String, required: true },
-	isAdmin: { type: Boolean, default: false },
+	isAdmin: { type: Boolean, default: true },
 	createdUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	createdBy: { type: Schema.Types.ObjectId, ref: 'User' }
 });

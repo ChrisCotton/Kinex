@@ -1,1 +1,10 @@
-export const SIGN_UP = 'sign_up';
+export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
+export const SIGN_UP_ERROR = 'SIGN_UP_ERROR';
+export const SIGN_IN_SUCCESS = 'SIGN_IN_SUCCESS';
+export const SIGN_IN_ERROR = 'SIGN_IN_ERROR';
+export const SIGN_OUT = 'SIGN_OUT';
+export const REMOVE_ALERTS = 'REMOVE_ALERTS';
+export const FETCH_USER = 'FETCH_USER';
+export const FETCH_PROJECTS = 'FETCH_PROJECTS';
+export const FETCH_ALL_USERS = 'FETCH_ALL_USERS';
+export const FETCH_ISSUES = 'FETCH_ISSUES';

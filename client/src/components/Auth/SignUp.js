@@ -2,12 +2,16 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
-import { Button, Header, Form } from 'semantic-ui-react';
+import { Button, Header, Form, Message, Reveal } from 'semantic-ui-react';
 import InputField from './InputField';
 import { signUpFields } from './formFields';
-import * as actions from '../../actions';
+import * as actions from '../../actions/auth';
 
 class SignUp extends Component {
+    componentWillUnmount(){
+        this.props.removeAlerts();
+    }
+
     renderFields(){
         return _.map(signUpFields, field => 
             <Field key={field.name} component={InputField}
@@ -16,6 +20,14 @@ class SignUp extends Component {
             fields={field}
             />
         )
+    }
+
+    renderAlert(){
+        if(this.props.signUpAlert){
+            return (
+                <Message color={this.props.signUpAlert.color}>{this.props.signUpAlert.message}</Message>
+            )
+        }
     }
 
     render(){
@@ -28,6 +40,7 @@ class SignUp extends Component {
                     {this.renderFields()}
                     <Button type="submit" color='blue' fluid size='large'>Login</Button>
                 </Form>
+                {this.renderAlert()}
             </div>
         )
     }
@@ -47,7 +60,13 @@ function validate(values){
     return errors;
 }
 
-SignUp = connect(null, actions)(SignUp);
+function mapStateToProps(state){
+    return {
+        signUpAlert: state.auth.alert
+    }
+}
+
+SignUp = connect(mapStateToProps, actions)(SignUp);
 
 export default reduxForm({
     validate,

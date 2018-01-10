@@ -7,7 +7,6 @@ import reduxThunk from 'redux-thunk';
 import 'typeface-roboto';
 import App from './components/App';
 import reducers from './reducers';
-import axios from 'axios';
 
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
 

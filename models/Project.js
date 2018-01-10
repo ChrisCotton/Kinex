@@ -7,7 +7,8 @@ const projectSchema = new Schema({
 	abbreviation: { type: String, required: true },
 	description: { type: String, required: true },
 	owner: { type: Schema.Types.ObjectId, ref: 'User' },
-	collaborators: [{ type: Schema.Types.ObjectId, ref: 'User' }]
+	collaborators: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+	created: { type: Date, default: Date.now }
 })
 
 projectSchema.methods.addCollaborators = function(userIds){

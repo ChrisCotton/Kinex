@@ -7,6 +7,15 @@ const Issue = mongoose.model('Issue');
 const passport = require('passport');
 const requireAuth = passport.authenticate('jwt', { session: false });
 
+router.get('/', requireAuth, async(req, res, next) => {
+    try {
+        const issues = await Issue.find({ assignee: req.user._id });
+        res.json(issues);
+    } catch(err){
+        res.send(err);
+    }
+})
+
 //Get All Issues under specific Project
 router.get('/:projectId', requireAuth, async (req, res, next) => {
     const { projectId } = req.params;
@@ -24,9 +33,9 @@ router.post('/createIssue/:projectId', requireAuth, async (req, res, next) => {
     const reporter = req.user._id;
     const { projectId } = req.params;
 
-    const newIssue = new Issue({ issueType, summary, description, priority, assignee, project, reporter, project: projectId });
+    const newIssue = new Issue({ issueType, summary, description, priority, assignee, reporter, project: projectId });
 
-    if(!issueType || !summary || !description || !priority || !assignee || !reporter || !project){
+    if(!issueType || !summary || !description || !priority || !assignee || !reporter){
         res.status(422).send({ error: 'You must fill in all required fields!' });
     }
 

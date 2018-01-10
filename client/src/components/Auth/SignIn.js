@@ -1,28 +1,82 @@
-import React from 'react';
-import { Button, Form, Header } from 'semantic-ui-react'
+import _ from 'lodash';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { reduxForm, Field } from 'redux-form';
+import { Button, Header, Form, Message, Reveal } from 'semantic-ui-react';
+import { withRouter } from 'react-router-dom';
+import InputField from './InputField';
+import { signInFields } from './formFields';
+import * as actions from '../../actions/auth';
 
-const SignIn = () => {
-    return (
-        <div>
-            <Header as='h3' color='blue' textAlign='center'>
-                {' '}Welcome Back
-            </Header>
-            <Form.Input
-                fluid
-                icon='user'
-                iconPosition='left'
-                placeholder='Username'
+class SignIn extends Component {
+    componentWillUnmount(){
+        this.props.removeAlerts();
+    }
+
+    componentWillUpdate(nextProps){
+        if(nextProps.authenticated){
+            this.props.history.push('/landing');
+        }
+    }
+
+    renderFields(){
+        return _.map(signInFields, field => 
+            <Field key={field.name} component={InputField}
+            type="text"
+            name={field.name}
+            fields={field}
             />
-            <Form.Input
-                fluid
-                icon='lock'
-                iconPosition='left'
-                placeholder='Password'
-                type='password'
-            />
-            <Button color='blue' fluid size='large'>Login</Button>
-        </div>
-    )
+        )
+    }
+
+    renderAlert(){
+        if(this.props.signInAlert){
+            return (
+                <Message color={this.props.signInAlert.color}>{this.props.signInAlert.message}</Message>
+            )
+        }
+    }
+
+    render(){
+        return (
+            <div>
+                <Form onSubmit={this.props.handleSubmit(this.props.signIn)}>
+                    <Header as='h3' color='blue' textAlign='center'>
+                        {' '}Welcome Back
+                    </Header>
+                    {this.renderFields()}
+                    <Button type="submit" color='green' fluid size='large'>Login</Button>
+                </Form>
+                {this.renderAlert()}
+            </div>
+        )
+    }
 }
 
-export default SignIn;
+function validate(values){
+    const errors = {};
+    console.log(values);
+
+    _.each(signInFields, ({ name }) => {
+
+		if(!values[name]){
+			errors[name] = `You must provide a ${name}`;
+		}
+    })
+    
+    return errors;
+}
+
+function mapStateToProps(state){
+    return {
+        signInAlert: state.auth.alert,
+        authenticated: state.auth.authenticated
+    }
+}
+
+SignIn = connect(mapStateToProps, actions)(withRouter(SignIn));
+
+export default reduxForm({
+    validate,
+    form: 'signInForm'
+})(SignIn);

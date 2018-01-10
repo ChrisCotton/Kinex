@@ -9,8 +9,8 @@ const requireAuth = passport.authenticate('jwt', { session: false });
 const requireAdmin = require('../middleware/requireAdmin');
 
 router.post('/createUser', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
-  const { username, password, firstName, lastName, isAdmin } = req.body;
-  const newUser = new User({ username, password, firstName, lastName, isAdmin });
+  const { username, password, firstName, lastName } = req.body;
+  const newUser = new User({ username, password, firstName, lastName, isAdmin: false, createdBy: req.user._id });
 
   if(!username || !firstName || !lastName){
   	return res.status(422).send({ error: 'You must fill in all the required fields.' });
@@ -36,6 +36,16 @@ router.post('/createUser', requireAuth, requireAdmin('isAdmin'), async (req, res
 		return false;
 	}
 });
+
+router.get('/createdUsers', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	try {
+		const users = await User.find({ createdBy: req.user.id });
+		res.send(users);
+	} catch(err){
+		res.send(err);
+	}
+	
+})
 
 router.get('/projects', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
 	Project.find({ owner: req.user._id })

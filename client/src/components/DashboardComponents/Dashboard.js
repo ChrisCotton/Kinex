@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
-import { Sidebar, Segment, Button, Menu, Image, Icon, Header, Card, Grid, List } from 'semantic-ui-react'
+import { Header, Card, Grid, List } from 'semantic-ui-react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import * as dashboardActions from '../actions/dashboard';
-import * as authActions from '../actions/auth';
+import * as dashboardActions from '../../actions/dashboard';
+import * as authActions from '../../actions/auth';
 import { bindActionCreators } from 'redux';
+import ProjectModal from './modals/ProjectModal';
+import CreateUserModal from './modals/CreateUserModal';
+import IssueModal from './modals/IssueModal';
+import SidebarMenu from './Menu';
 
 const cardStyle = {
     height: '300px',
     margin: '10px'
 }
 
-class Landing extends Component {
+class Dashboard extends Component {
     componentWillMount() {
         this.props.dashboardActions.fetchUser();
         this.props.dashboardActions.fetchProjects();
@@ -21,10 +25,13 @@ class Landing extends Component {
 
     renderProjects() {
         if(!this.props.projects){
-            return (
-                <div>Loading...</div>
-            )
+            return <div>Loading ...</div>
         }
+
+        if(this.props.projects.length === 0){
+            return <ProjectModal/>
+        }
+
         return this.props.projects.map((project) => {
             const date = new Date(project.created);
 
@@ -42,10 +49,13 @@ class Landing extends Component {
 
     renderAllUsers() {
         if(!this.props.allUsers){
-            return (
-                <div>Loading...</div>
-            )
+            return <div>Loading ...</div>;
         }
+
+        if(this.props.allUsers.length === 0){
+            return <CreateUserModal/>;
+        }
+
         return this.props.allUsers.map((user) => {
             return (
                 <List.Item key={user._id}>
@@ -59,23 +69,31 @@ class Landing extends Component {
         })
     }
 
-    renderAllIssues(){
+    renderAllIssues() {
         if(!this.props.allIssues){
+            return <div>Loading ...</div>
+        }
+
+        if(this.props.allIssues.length === 0){
             return (
-                <div>Loading...</div>
+                <div>
+                    <Header as='h3'>You currently do not have any issues assigned to you.</Header>
+                    <IssueModal/>
+                </div>
             )
         }
+
         return this.props.allIssues.map((issue) => {
             return (
                 <List.Item key={issue._id}>
                     <List.Icon name='check' size='large' verticalAlign='middle' />
                     <List.Content>
-                        <List.Header as='a'>{issue.summary}</List.Header>
+                        <Link to={`issue/${issue._id}`}><List.Header>{issue.summary}</List.Header></Link>
                         <List.Description as='a'>{issue.description}</List.Description>
                     </List.Content>
                 </List.Item>
             )
-        })     
+        })
     }
 
     render() {
@@ -86,26 +104,7 @@ class Landing extends Component {
 
         return (
             <div style={{ height: '100vh' }}>
-                <Sidebar.Pushable as={Segment}>
-                    <Sidebar as={Menu} animation='overlay' width='thin' visible={true} icon='labeled' vertical inverted>
-                        <Menu.Item name='home'>
-                            <Icon name='home' />
-                            Home
-                        </Menu.Item>
-
-                        <Menu.Item name='gamepad'>
-                            <Icon name='gamepad' />
-                            Games
-                        </Menu.Item>
-
-                        <Link to="/" onClick={this.props.authActions.signOut}>
-                            <Menu.Item name='external'>
-                                <Icon name='external' />
-                                Logout
-
-                            </Menu.Item>
-                        </Link>
-                    </Sidebar>
+                    <SidebarMenu/>
                     <Grid columns={3} style={{ marginLeft: '12em' }}>
                         <Grid.Row>
                             <Card style={cardStyle}>
@@ -140,7 +139,6 @@ class Landing extends Component {
                             </Card>
                         </Grid.Row>
                     </Grid>
-                </Sidebar.Pushable>
             </div>
         )
     }
@@ -162,4 +160,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Landing);
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
-import { Button, Header, Form, Message, Reveal } from 'semantic-ui-react';
+import { Button, Header, Form, Message } from 'semantic-ui-react';
 import InputField from './InputField';
 import { signUpFields } from './formFields';
 import * as actions from '../../actions/auth';
@@ -48,8 +48,6 @@ class SignUp extends Component {
 
 function validate(values){
     const errors = {};
-    console.log(values);
-
     _.each(signUpFields, ({ name }) => {
 
 		if(!values[name]){

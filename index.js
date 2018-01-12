@@ -5,9 +5,9 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const cors = require('cors');
 const keys = require('./config/keys');
 const passport = require('passport');
+const cors = require('cors');
 
 require('./models/User');
 require('./models/Project');
@@ -36,9 +36,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api', common);
-app.use('/auth', auth);
-app.use('/admin', admin);
-app.use('/issue', issue);
+app.use('/api/auth', auth);
+app.use('/api/admin', admin);
+app.use('/api/issue', issue);
 
 if(process.env.NODE_ENV === 'production'){
 	app.use(express.static('client/build'));

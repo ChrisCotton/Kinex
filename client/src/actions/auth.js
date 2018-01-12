@@ -7,7 +7,7 @@ export const removeAlerts = () => dispatch => {
 
 export const signUp = values => async dispatch => {
     try {
-        const res = await axios.post('/auth/signUp', values);
+        const res = await axios.post('/api/auth/signUp', values);
         dispatch({ type: SIGN_UP_SUCCESS, payload: res.data });
     } catch(err){
         dispatch({ type: SIGN_UP_ERROR, payload: err });
@@ -16,7 +16,7 @@ export const signUp = values => async dispatch => {
 
 export const signIn = values => async dispatch => {
     try {
-        const res = await axios.post('/auth/signIn', values);
+        const res = await axios.post('/api/auth/signIn', values);
         localStorage.setItem('token', res.data.token);
         dispatch({ type: SIGN_IN_SUCCESS, payload: res.data });
     } catch(err){

@@ -13,7 +13,7 @@ export const fetchUser = () => async dispatch => {
 
 export const fetchProjects = () => async dispatch => {
     try {
-        const response = await axios.get('/admin/projects',
+        const response = await axios.get('/api/admin/projects',
         { headers: { Authorization: localStorage.getItem('token') } });
         dispatch({ type: FETCH_PROJECTS, payload: response });
     } catch(err){
@@ -23,7 +23,7 @@ export const fetchProjects = () => async dispatch => {
 
 export const fetchAllUsers = () => async dispatch => {
     try {
-        const response = await axios.get('/admin/createdUsers',
+        const response = await axios.get('/api/admin/createdUsers',
         { headers: { Authorization: localStorage.getItem('token') } });
         dispatch({ type: FETCH_ALL_USERS, payload: response });
     } catch(err){
@@ -33,7 +33,7 @@ export const fetchAllUsers = () => async dispatch => {
 
 export const fetchIssues = () => async dispatch => {
     try {
-        const response = await axios.get('/issue/',
+        const response = await axios.get('/api/issue/',
         { headers: { Authorization: localStorage.getItem('token') } });
         dispatch({ type: FETCH_ISSUES, payload: response });
     } catch(err){

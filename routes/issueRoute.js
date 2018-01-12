@@ -41,12 +41,10 @@ router.post('/createIssue/:projectId', requireAuth, async (req, res, next) => {
 
     try {
         const saved = await newIssue.save();
-        res.status(200);
-        res.json({ message: 'Issue successfully created!' });
-        return true;
+        console.log(saved);
+        res.send(saved);
     } catch (err) {
         res.send(err);
-        return false;
     }
 
 });

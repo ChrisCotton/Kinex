@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
-import { Button, Header, Form, Message, Reveal } from 'semantic-ui-react';
+import { Button, Header, Form, Message } from 'semantic-ui-react';
 import { withRouter } from 'react-router-dom';
 import InputField from './InputField';
 import { signInFields } from './formFields';
@@ -15,7 +15,7 @@ class SignIn extends Component {
 
     componentWillUpdate(nextProps){
         if(nextProps.authenticated){
-            this.props.history.push('/landing');
+            this.props.history.push('/dashboard');
         }
     }
 
@@ -45,7 +45,7 @@ class SignIn extends Component {
                         {' '}Welcome Back
                     </Header>
                     {this.renderFields()}
-                    <Button type="submit" color='green' fluid size='large'>Login</Button>
+                    <Button type="submit" primary fluid size='large'>Login</Button>
                 </Form>
                 {this.renderAlert()}
             </div>
@@ -55,8 +55,6 @@ class SignIn extends Component {
 
 function validate(values){
     const errors = {};
-    console.log(values);
-
     _.each(signInFields, ({ name }) => {
 
 		if(!values[name]){

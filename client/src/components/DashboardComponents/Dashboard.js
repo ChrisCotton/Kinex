@@ -32,14 +32,21 @@ class Dashboard extends Component {
             return <ProjectModal/>
         }
 
-        return this.props.projects.map((project) => {
+        return this.props.projects.map((project, index) => {
             const date = new Date(project.created);
+
+            if(index === 4){
+                console.log(index);
+                return;
+            }
 
             return (
                 <List.Item key={project._id}>
                     <List.Icon name='check' size='large' verticalAlign='middle' />
                     <List.Content>
+                    <Link to={`singleProject/${project._id}`}>
                         <List.Header as='a'>{project.title}</List.Header>
+                    </Link>
                         <List.Description as='a'>Created on {date.getMonth() + 1}/{date.getDate()}/{date.getFullYear()}</List.Description>
                     </List.Content>
                 </List.Item>
@@ -122,7 +129,7 @@ class Dashboard extends Component {
                                     <Card.Header><Header as='h1'>Your Projects</Header></Card.Header>
                                     <Card.Meta>Projects</Card.Meta>
                                     <Card.Description>List of Projects Under Development</Card.Description>
-                                    <List divided relaxed>
+                                    <List divided relaxed style={{ overflowY: 'scroll', height: '170px' }}>
                                         {this.renderProjects()}
                                     </List>
                                 </Card.Content>
@@ -132,7 +139,7 @@ class Dashboard extends Component {
                                     <Card.Header><Header as='h1'>All Users</Header></Card.Header>
                                     <Card.Meta>Users that are affiliated to you and the projects you have created.</Card.Meta>
                                     <Card.Description>List of Users</Card.Description>
-                                    <List divided relaxed>
+                                    <List divided relaxed style={{ overflowY: 'scroll', height: '170px' }}>
                                         {this.renderAllUsers()}
                                     </List>
                                 </Card.Content>

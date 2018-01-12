@@ -22,14 +22,14 @@ class SidebarMenu extends Component {
                     </Menu.Item>
                 </Link>
 
-                <Link to="/dashboard">
+                <Link to="/users">
                     <Menu.Item name='user'>
                         <Icon name='user' />
                         Users
                     </Menu.Item>
                 </Link>
 
-                <Link to="/dashboard">
+                <Link to="/feed">
                     <Menu.Item name='feed'>
                         <Icon name='feed' />
                         Feed

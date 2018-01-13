@@ -11,7 +11,8 @@ import {
     FETCH_PROJECT_ISSUES,
     GET_AFFILIATED,
     CREATE_ISSUE,
-    VIEW_ISSUE
+    VIEW_ISSUE,
+    FETCH_ISSUE
 } from '../actions/types';
 
 export default function(state = {}, action){
@@ -49,7 +50,9 @@ export default function(state = {}, action){
         case FETCH_PROJECT_ISSUES:
             return { ...state, projectIssues: action.payload.data }
         case VIEW_ISSUE:
-            return { ...state, showIssue: state.projectIssues.filter(issue => issue._id === action.payload)[0] }
+            return { ...state, showIssue: state.projectIssues.filter(issue => issue._id === action.payload)[0] };
+        case FETCH_ISSUE:
+            return { ...state, showIssue: action.payload.data };
         default:
             return state;
     }

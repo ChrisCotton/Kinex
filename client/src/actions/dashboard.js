@@ -23,7 +23,7 @@ export const fetchProjects = () => async dispatch => {
 
 export const fetchAllUsers = () => async dispatch => {
     try {
-        const response = await axios.get('/api/admin/createdUsers',
+        const response = await axios.get('/api/affiliated',
         { headers: { Authorization: localStorage.getItem('token') } });
         dispatch({ type: FETCH_ALL_USERS, payload: response });
     } catch(err){

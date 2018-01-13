@@ -26,6 +26,5 @@ export const signIn = values => async dispatch => {
 
 export const signOut = () => dispatch => {
     localStorage.removeItem('token');
-    console.log("TEST");
     dispatch({ type: SIGN_OUT });
 }

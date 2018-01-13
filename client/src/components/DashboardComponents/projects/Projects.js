@@ -11,51 +11,39 @@ import { Link } from 'react-router-dom';
 class Projects extends Component {
     componentWillMount() {
         this.props.dashboardActions.fetchProjects();
+        this.props.dashboardActions.fetchUser();
     }
 
-    deleteProject(projectId){
-        this.props.projectActions.deleteProject(projectId);
-    }
-
-    editProject(project){
-        console.log(project);
+    conditionallyRender(element){
+        if(this.props.user){
+            return (
+                <div style={{ display: this.props.user.isAdmin ? 'block' : 'none' }}>
+                    {element}
+                </div>
+            )
+        }
     }
 
     renderProjectsTable() {
-        if (!this.props.projects) {
-            return <div>Loading...</div>
+        if (this.props.projects) {
+            return this.props.projects.map((project) => {
+                const date = new Date(project.created);
+                return (
+                    <Table.Row key={project._id}>
+                        <Table.Cell>{project.title}</Table.Cell>
+                        <Table.Cell>{project.type}</Table.Cell>
+                        <Table.Cell>{project.abbreviation}</Table.Cell>
+                        <Table.Cell>{project.owner}</Table.Cell>
+                        <Table.Cell>{date.getMonth() + 1}/{date.getDay()}/{date.getFullYear()}</Table.Cell>
+                    </Table.Row>
+                )
+            })
         }
-
-        if (this.props.projects.length === 0) {
-            return <div>No projects found</div>
-        }
-
-        return this.props.projects.map((project) => {
-            const date = new Date(project.created);
-
-            return (
-                <Table.Row>
-                    <Table.Cell>{project.title}</Table.Cell>
-                    <Table.Cell>{project.type}</Table.Cell>
-                    <Table.Cell>{project.abbreviation}</Table.Cell>
-                    <Table.Cell>{project.owner}</Table.Cell>
-                    <Table.Cell>{date.getMonth() + 1}/{date.getDay()}/{date.getFullYear()}</Table.Cell>
-                </Table.Row>
-            )
-        })
     }
 
-    renderProjectsCards(){
-        if (!this.props.projects) {
-            return <div>Loading...</div>
-        }
-
-        if (this.props.projects.length === 0) {
-            return <div>No projects found</div>
-        }
-        
-        return this.props.projects.map((project) => {
-            return (
+    renderProjectsCards() {
+        if (this.props.projects && this.props.user) {
+            return this.props.projects.map(project =>
                 <Card key={project._id}>
                     <Card.Content>
                         <Card.Header>
@@ -63,7 +51,7 @@ class Projects extends Component {
                         </Card.Header>
                         <Card.Meta>
                             {project.type} Project
-                        </Card.Meta>
+                            </Card.Meta>
                         <Card.Description>
                             {project.description}
                         </Card.Description>
@@ -73,13 +61,16 @@ class Projects extends Component {
                             <Link to={`singleProject/${project._id}`}>
                                 <Button>View</Button>
                             </Link>
-                                <ProjectModal editMode={true} initialValues={project} form={project._id}/>
-                            <Button onClick={() => this.deleteProject(project._id)}>Delete</Button>
+                            {this.conditionallyRender(
+                                <div>
+                                    <ProjectModal editMode={true} initialValues={project} form={project._id} />
+                                    <Button onClick={() => this.props.projectActions.deleteProject(project._id)}>Delete</Button>
+                                </div>
+                            )}
                         </div>
                     </Card.Content>
-                </Card>
-            )
-        })
+                </Card>)
+        }
     }
 
     render() {
@@ -111,6 +102,7 @@ class Projects extends Component {
                                 {this.renderProjectsTable()}
                             </Table.Body>
 
+                            {this.conditionallyRender(
                             <Table.Footer>
                                 <Table.Row>
                                     <Table.HeaderCell />
@@ -121,6 +113,7 @@ class Projects extends Component {
                                     </Table.HeaderCell>
                                 </Table.Row>
                             </Table.Footer>
+                            )}
                         </Table>
                     </Grid.Row>
                 </Grid>
@@ -131,7 +124,8 @@ class Projects extends Component {
 
 function mapStateToProps(state) {
     return {
-        projects: state.dashboard.projects
+        projects: state.dashboard.projects,
+        user: state.dashboard.user
     }
 }
 

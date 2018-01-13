@@ -15,7 +15,6 @@ class IssueModal extends Component {
 
     componentWillMount(){
         this.props.userActions.getAffiliatedUsers();
-        console.log(this.props);
     }
 
     renderFields(){

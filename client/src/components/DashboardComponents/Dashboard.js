@@ -23,84 +23,67 @@ class Dashboard extends Component {
         this.props.dashboardActions.fetchIssues();
     }
 
-    renderProjects() {
-        if(!this.props.projects){
-            return <div>Loading ...</div>
-        }
-
-        if(this.props.projects.length === 0){
-            return <ProjectModal/>
-        }
-
-        return this.props.projects.map((project, index) => {
-            const date = new Date(project.created);
-
-            if(index === 4){
-                console.log(index);
-                return;
-            }
-
+    conditionallyRender(element) {
+        if (this.props.user) {
             return (
-                <List.Item key={project._id}>
-                    <List.Icon name='check' size='large' verticalAlign='middle' />
-                    <List.Content>
-                    <Link to={`singleProject/${project._id}`}>
-                        <List.Header as='a'>{project.title}</List.Header>
-                    </Link>
-                        <List.Description as='a'>Created on {date.getMonth() + 1}/{date.getDate()}/{date.getFullYear()}</List.Description>
-                    </List.Content>
-                </List.Item>
-            )
-        })
-    }
-
-    renderAllUsers() {
-        if(!this.props.allUsers){
-            return <div>Loading ...</div>;
-        }
-
-        if(this.props.allUsers.length === 0){
-            return <CreateUserModal/>;
-        }
-
-        return this.props.allUsers.map((user) => {
-            return (
-                <List.Item key={user._id}>
-                    <List.Icon name='check' size='large' verticalAlign='middle' />
-                    <List.Content>
-                        <List.Header as='a'>{user.firstName} {user.lastName}</List.Header>
-                        <List.Description as='a'>{user._id}</List.Description>
-                    </List.Content>
-                </List.Item>
-            )
-        })
-    }
-
-    renderAllIssues() {
-        if(!this.props.allIssues){
-            return <div>Loading ...</div>
-        }
-
-        if(this.props.allIssues.length === 0){
-            return (
-                <div>
-                    <Header as='h3'>You currently do not have any issues assigned to you.</Header>
-                    <IssueModal/>
+                <div style={{ display: this.props.user.isAdmin ? 'block' : 'none' }}>
+                    {element}
                 </div>
             )
         }
+    }
 
-        return this.props.allIssues.map((issue) => {
-            return (
-                <List.Item key={issue._id}>
-                    <List.Icon name='check' size='large' verticalAlign='middle' />
-                    <List.Content>
-                        <Link to={`issue/${issue._id}`}><List.Header>{issue.summary}</List.Header></Link>
-                        <List.Description as='a'>{issue.description}</List.Description>
-                    </List.Content>
-                </List.Item>
+    renderProjects() {
+        if(this.props.projects && this.props.projects.length){
+            return this.props.projects.map((project, index) => {
+                const date = new Date(project.created);
+                if(index === 6) return;
+                return (
+                    <List.Item key={project._id}>
+                        <List.Icon name='check' size='large' verticalAlign='middle' />
+                        <List.Content>
+                        <Link to={`singleProject/${project._id}`}>
+                            <List.Header>{project.title}</List.Header>
+                        </Link>
+                            <List.Description>Created on {date.getMonth() + 1}/{date.getDate()}/{date.getFullYear()}</List.Description>
+                        </List.Content>
+                    </List.Item>
+                )
+            })
+        }
+        return <ProjectModal/>;
+    }
+
+    renderAllUsers() {
+        if(this.props.allUsers){
+            return this.props.allUsers.map(user => 
+                    <List.Item key={user._id}>
+                        <List.Icon name='check' size='large' verticalAlign='middle' />
+                        <List.Content>
+                            <List.Header>{user.firstName} {user.lastName}</List.Header>
+                            <List.Description>{user._id}</List.Description>
+                        </List.Content>
+                    </List.Item>)
+        }
+
+        return this.conditionallyRender(<CreateUserModal/>);
+    }
+
+    renderAllIssues() {
+        if(this.props.allIssues && this.props.allIssues.length){
+            return this.props.allIssues.map(issue => 
+                    <List.Item key={issue._id}>
+                        <List.Icon name='check' size='large' verticalAlign='middle' />
+                        <List.Content>
+                            <Link to={`issue/${issue._id}`}><List.Header>{issue.summary}</List.Header></Link>
+                            <List.Description as='a'>{issue.description}</List.Description>
+                        </List.Content>
+                    </List.Item>
             )
-        })
+        }
+        return <div>
+                    <Header as='h3'>You currently do not have any issues assigned to you.</Header>
+               </div>
     }
 
     render() {
@@ -119,7 +102,7 @@ class Dashboard extends Component {
                                     <Card.Header><Header as='h1'>Welcome back, {user.firstName}</Header></Card.Header>
                                     <Card.Meta>Issues/Tasks</Card.Meta>
                                     <Card.Description>Tasks Assigned to you:</Card.Description>
-                                    <List divided relaxed>
+                                    <List divided relaxed style={{ overflowY: 'scroll', height: '150px' }}>
                                         {this.renderAllIssues()}
                                     </List>
                                 </Card.Content>
@@ -129,7 +112,7 @@ class Dashboard extends Component {
                                     <Card.Header><Header as='h1'>Your Projects</Header></Card.Header>
                                     <Card.Meta>Projects</Card.Meta>
                                     <Card.Description>List of Projects Under Development</Card.Description>
-                                    <List divided relaxed style={{ overflowY: 'scroll', height: '170px' }}>
+                                    <List divided relaxed style={{ overflowY: 'scroll', height: '150px' }}>
                                         {this.renderProjects()}
                                     </List>
                                 </Card.Content>
@@ -139,7 +122,7 @@ class Dashboard extends Component {
                                     <Card.Header><Header as='h1'>All Users</Header></Card.Header>
                                     <Card.Meta>Users that are affiliated to you and the projects you have created.</Card.Meta>
                                     <Card.Description>List of Users</Card.Description>
-                                    <List divided relaxed style={{ overflowY: 'scroll', height: '170px' }}>
+                                    <List divided relaxed style={{ overflowY: 'scroll', height: '150px' }}>
                                         {this.renderAllUsers()}
                                     </List>
                                 </Card.Content>

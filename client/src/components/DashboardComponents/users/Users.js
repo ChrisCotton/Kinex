@@ -10,6 +10,17 @@ import { Link } from 'react-router-dom';
 class Users extends Component {
     componentWillMount() {
         this.props.getAffiliatedUsers();
+        this.props.fetchUser();
+    }
+
+    conditionallyRender(element) {
+        if (this.props.user) {
+            return (
+                <div style={{ display: this.props.user.isAdmin ? 'block' : 'none' }}>
+                    {element}
+                </div>
+            )
+        }
     }
 
     renderUsersTable() {
@@ -33,7 +44,7 @@ class Users extends Component {
         })
     }
 
-    renderUsersCards(){
+    renderUsersCards() {
         if (!this.props.users) {
             return <div>Loading...</div>
         }
@@ -41,7 +52,7 @@ class Users extends Component {
         if (this.props.users.length === 0) {
             return <div>No users found</div>
         }
-        
+
         return this.props.users.map((user) => {
             return (
                 <Card key={user._id}>
@@ -50,7 +61,7 @@ class Users extends Component {
                             {user.firstName} {user.lastName}
                         </Card.Header>
                         <Card.Meta>
-                            Created By { user.createdBy }
+                            Created By {user.createdBy}
                         </Card.Meta>
                         <Card.Description>
                             {user._id}
@@ -61,8 +72,12 @@ class Users extends Component {
                             <Link to={`singleProject/${user._id}`}>
                                 <Button>View</Button>
                             </Link>
-                                <CreateUserModal editMode={true} initialValues={user} form={user._id}/>
-                            <Button>Delete</Button>
+                            {this.conditionallyRender(
+                                <div>
+                                    <CreateUserModal editMode={true} initialValues={user} form={user._id} />
+                                    <Button>Delete</Button>
+                                </div>
+                            )}
                         </div>
                     </Card.Content>
                 </Card>
@@ -97,17 +112,18 @@ class Users extends Component {
                             <Table.Body>
                                 {this.renderUsersTable()}
                             </Table.Body>
-
-                            <Table.Footer>
-                                <Table.Row>
-                                    <Table.HeaderCell />
-                                    <Table.HeaderCell colSpan='4'>
-                                        <div style={{ float: 'right' }}>
-                                            <CreateUserModal />
-                                        </div>
-                                    </Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Footer>
+                            {this.conditionallyRender(
+                                <Table.Footer>
+                                    <Table.Row>
+                                        <Table.HeaderCell />
+                                        <Table.HeaderCell colSpan='4'>
+                                            <div style={{ float: 'right' }}>
+                                                <CreateUserModal />
+                                            </div>
+                                        </Table.HeaderCell>
+                                    </Table.Row>
+                                </Table.Footer>
+                            )}
                         </Table>
                     </Grid.Row>
                 </Grid>
@@ -118,7 +134,8 @@ class Users extends Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.dashboard.affiliated
+        users: state.dashboard.affiliated,
+        user: state.dashboard.user
     }
 }
 

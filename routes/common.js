@@ -7,28 +7,32 @@ const Project = mongoose.model('Project');
 const User = mongoose.model('User');
 
 router.get('/current_user', requireAuth, (req, res, next) => {
-    const { firstName, lastName, createdUsers } = req.user;
+    const { firstName, lastName, createdUsers, isAdmin } = req.user;
     res.json({
         firstName,
         lastName,
-        createdUsers
+        createdUsers,
+        isAdmin
     });
 });
 
 router.get('/affiliated', requireAuth, async (req, res, next) => {
-    try {
-        let searchBy = '';
         if(req.user.isAdmin){
-            searchBy = req.user._id;
+            try {
+                const users = await User.find({ createdBy: req.user._id });
+                const admin = await User.findById(req.user._id);
+                res.send([ admin, ...users ]);
+            } catch(err){
+                res.send(err);
+            }   
         } else {
-            searchBy = req.user.createdBy;
+            try {
+                const users = await User.find({ createdBy: req.user.createdBy });
+                res.send(users);
+            } catch(err){
+                res.send(err);
+            }
         }
-
-        const users = await User.find({ createdBy: searchBy });
-        res.send(users);
-    } catch(err){
-        res.send(err);
-    }
 })
 
 router.get('/project/:projectId', requireAuth, async (req, res, next) => {

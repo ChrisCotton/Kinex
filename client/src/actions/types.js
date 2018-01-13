@@ -17,3 +17,4 @@ export const CREATE_USER = 'CREATE_USER';
 export const CREATE_ISSUE = 'CREATE_ISSUE';
 export const GET_AFFILIATED = 'GET_AFFILIATED';
 export const VIEW_ISSUE = 'VIEW_ISSUE';
+export const FETCH_ISSUE = 'FETCH_ISSUE';

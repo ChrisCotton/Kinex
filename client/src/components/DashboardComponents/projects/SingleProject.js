@@ -1,19 +1,27 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Grid, Header, Segment, List, Card } from 'semantic-ui-react';
+import { Grid, Header, Segment, List, Card, Container, Button, Icon } from 'semantic-ui-react';
 import SidebarMenu from '../Menu';
 import * as actions from '../../../actions/project';
 import IssueModal from '../modals/IssueModal';
 
 class SingleProject extends Component {
+    state = { currentIssue: {} }
+
     componentWillMount() {
         const { projectId } = this.props.match.params;
         this.props.fetchProject(projectId);
         this.props.fetchIssues(projectId);
     }
 
-    componentWillReceiveProps(nextProps){
-        console.log(nextProps);
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.projectIssues) {
+            this.setState({ currentIssue: nextProps.projectIssues[0] });
+        }
+    }
+
+    componentWillUnmount() {
+        this.setState({ currentIssue: {} });
     }
 
     renderSingleProject() {
@@ -33,17 +41,51 @@ class SingleProject extends Component {
                     </Card.Content>
                     <IssueModal projectId={projectId} />
                 </Card>
-                
-            </Card.Group>  
+
+            </Card.Group>
         )
     }
 
     renderIssueScreen() {
-        if(!this.props.currentIssue){
-            return <div>LOADING.....</div>
+        if (!this.state.currentIssue && this.props.projectIssues.length) {
+            this.setState({ currentIssue: this.props.projectIssues[0] });
         }
-        console.log(this.props.currentIssue);
-        return <div>{this.props.currentIssue.summary}</div>
+
+        if(this.state.currentIssue){
+        return (
+            <Container>
+                <Grid>
+                    <Grid.Row style={{ marginTop: '3em' }}>
+                        <Grid.Column>
+                            <Header as='h1'>
+                                <Icon name='pin' />
+                                <Header.Content>{this.state.currentIssue.summary}</Header.Content>
+                            </Header>
+                            <Header as='h3' color='grey'>
+                                {this.state.currentIssue.description}
+                            </Header>
+                            <Button>Edit</Button>
+                            <Button>To Do</Button>
+                            <Button>In Progress</Button>
+                            <Button>Done</Button>
+                            <Header as='h4' color='grey'>
+                                Type: {this.state.currentIssue.issueType}
+                            </Header>
+                            <Header as='h4' color='grey'>
+                                Priority: {this.state.currentIssue.priority}
+                            </Header>
+                            <Header as='h4' color='grey'>
+                                Assignee: {this.state.currentIssue.assignee}
+                            </Header>
+                            <Header as='h4' color='grey'>
+                                Reporter: {this.state.currentIssue.reporter}
+                            </Header>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Container>
+        );
+    }
     }
 
     renderProjectIssues() {
@@ -60,7 +102,7 @@ class SingleProject extends Component {
         return (
             this.props.projectIssues.map((issue) => {
                 return (
-                    <List.Item onClick={() => this.props.viewIssue(issue._id)} key={issue._id}>
+                    <List.Item onClick={() => this.setState({ currentIssue: issue })} key={issue._id}>
                         <List.Icon name='github' size='large' verticalAlign='middle' />
                         <List.Content>
                             <List.Header as='a'>{issue.summary}</List.Header>
@@ -104,8 +146,7 @@ class SingleProject extends Component {
 function mapStateToProps(state) {
     return {
         project: state.dashboard.project,
-        projectIssues: state.dashboard.projectIssues,
-        currentIssue: state.dashboard.showIssue
+        projectIssues: state.dashboard.projectIssues
     }
 }
 

@@ -58,13 +58,25 @@ router.get('/createdUsers', requireAuth, requireAdmin('isAdmin'), async (req, re
 	} catch(err){
 		res.send(err);
 	}
-	
 })
 
-router.get('/projects', requireAuth, requireAdmin('isAdmin'), (req, res, next) => {
-	Project.find({ owner: req.user._id })
-	.then(result => res.send(result))
-	.catch(err => next(err));
+router.get('/projects', requireAuth, async (req, res, next) => {
+	if(req.user.isAdmin){
+		try {
+			const projects = await Project.find({ owner: req.user._id });
+			res.send(projects);
+		} catch(err){
+			res.send(err);
+		}
+		
+	} else {
+		try {
+			const projects = await Project.find({ owner: req.user.createdBy });
+			res.send(projects);	
+		} catch(err){
+			res.send(err);
+		}
+	}
 })
 
 router.delete('/deleteUsers', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
@@ -107,7 +119,7 @@ router.delete('/project/:projectId', requireAuth, requireAdmin('isAdmin'), async
 	}
 });
 
-router.post('/addCollaborators/:projectId', requireAuth, async (req, res, next) => {
+router.post('/addCollaborators/:projectId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
 	const { projectId } = req.params;
 	const { users } = req.body;
 

@@ -17,13 +17,23 @@ router.get('/', requireAuth, async(req, res, next) => {
 })
 
 //Get All Issues under specific Project
-router.get('/:projectId', requireAuth, async (req, res, next) => {
+router.get('/getIssues/:projectId', requireAuth, async (req, res, next) => {
     const { projectId } = req.params;
     try {
         const issue = await Issue.find({ project: projectId });
         res.json(issue);
     } catch(err){
         res.status(204).send({ error: 'No issues found for this project.' });
+    }
+})
+
+router.get('/getIssue/:issueId', requireAuth, async (req, res, next) => {
+    const { issueId } = req.params;
+    try {
+        const issue = await Issue.findById(issueId);
+        res.status(200).send(issue);
+    } catch(err){
+        res.status(204).send({ error: `No issues found with ID: ${issueId}` });
     }
 })
 
@@ -50,7 +60,7 @@ router.post('/createIssue/:projectId', requireAuth, async (req, res, next) => {
 });
 
 //Edit Issue
-router.put('/:issueId', async (req, res, next) => {
+router.put('/editIssue/:issueId', async (req, res, next) => {
     const { issueId } = req.params;
     const { issueType, summary, description, priority, assignee } = req.body;
 
@@ -66,7 +76,7 @@ router.put('/:issueId', async (req, res, next) => {
 })
 
 //Delete Issue
-router.delete('/:issueId', async (req, res, next) => {
+router.delete('/deleteIssue/:issueId', async (req, res, next) => {
     const { issueId } = req.params;
     
     try {
@@ -76,7 +86,5 @@ router.delete('/:issueId', async (req, res, next) => {
         res.status(404).send(err);
     }
 })
-
-
 
 module.exports = router;

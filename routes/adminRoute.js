@@ -119,6 +119,17 @@ router.delete('/project/:projectId', requireAuth, requireAdmin('isAdmin'), async
 	}
 });
 
+router.delete('/user/:userId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
+	const { userId } = req.params;
+
+	try {
+		const remove = await User.findByIdAndRemove(userId);
+		res.status(200).send(remove);
+	} catch(err){
+		res.status(404).send(err);
+	}
+});
+
 router.post('/addCollaborators/:projectId', requireAuth, requireAdmin('isAdmin'), async (req, res, next) => {
 	const { projectId } = req.params;
 	const { users } = req.body;

@@ -27,6 +27,16 @@ router.get('/getIssues/:projectId', requireAuth, async (req, res, next) => {
     }
 })
 
+router.get('/getUserIssues/:userId', requireAuth, async (req, res, next) => {
+    const { userId } = req.params;
+    try {
+        const issue = await Issue.find({ assignee: userId });
+        res.json(issue);
+    } catch(err){
+        res.status(204).send({ error: 'No issues found for this project.' });
+    }
+})
+
 router.get('/getIssue/:issueId', requireAuth, async (req, res, next) => {
     const { issueId } = req.params;
     try {

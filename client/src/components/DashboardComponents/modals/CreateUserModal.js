@@ -9,24 +9,39 @@ import * as actions from '../../../actions/user';
 const formProps = {};
 
 class CreateUserModal extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
 
-    renderFields(){
-        return createUserFields.map(user => 
-                <Field 
+    renderFields() {
+        if (this.props.editMode === true) {
+            return createUserFields.map(user => {
+                if (user.name === 'username') {
+                    return;
+                } else {
+                    return <Field
+                        {...user}
+                    />
+                }
+            })
+        }
+
+        else if (!this.props.editMode) {
+            return createUserFields.map(user =>
+                <Field
                     {...user}
                     required
                 />
-        )
+            )
+        }
+
     }
 
-    renderButton(){
-        if(this.props.editMode){
+    renderButton() {
+        if (this.props.editMode) {
             formProps.title = 'Edit User';
             formProps.action = 'Update';
-            formProps.method = this.props.createUser;
+            formProps.method = this.props.editUser;
             return <Button>Edit</Button>
         }
 
@@ -53,7 +68,7 @@ class CreateUserModal extends Component {
     }
 }
 
-function validate(values){
+function validate(values) {
     const errors = {};
     _.each(createUserFields, ({ name }) => {
         if (!values[name]) {

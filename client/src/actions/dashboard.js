@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FETCH_USER, FETCH_PROJECTS, FETCH_ALL_USERS, FETCH_ISSUES } from './types';
+import { FETCH_USER, FETCH_PROJECTS, FETCH_ALL_USERS, FETCH_ISSUES, FETCH_USERS_ISSUES } from './types';
 
 export const fetchUser = () => async dispatch => {
     try {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Grid, Header, Button, Table, Card } from 'semantic-ui-react';
+import { Grid, Header, Button, Table, Card, Confirm } from 'semantic-ui-react';
 import SidebarMenu from '../Menu';
 import * as dashboardActions from '../../../actions/dashboard';
 import * as projectActions from '../../../actions/project';
@@ -9,6 +9,8 @@ import ProjectModal from '../modals/ProjectModal';
 import { Link } from 'react-router-dom';
 
 class Projects extends Component {
+    state = { open: false, currentProject: {} };
+
     componentWillMount() {
         this.props.dashboardActions.fetchProjects();
         this.props.dashboardActions.fetchUser();
@@ -22,6 +24,15 @@ class Projects extends Component {
                 </div>
             )
         }
+    }
+
+    showConfirm = (projectId) => {
+        this.setState({ open: true, currentProject: projectId });
+    }
+    handleCancel = () => this.setState({ open: false });
+    handleConfirm = () => {
+        this.props.projectActions.deleteProject(this.state.currentProject);
+        this.setState({ open: false });
     }
 
     renderProjectsTable() {
@@ -64,7 +75,17 @@ class Projects extends Component {
                             {this.conditionallyRender(
                                 <div>
                                     <ProjectModal editMode={true} initialValues={project} form={project._id} />
-                                    <Button onClick={() => this.props.projectActions.deleteProject(project._id)}>Delete</Button>
+                                    <Button onClick={() => this.showConfirm(project._id)}>
+                                        Delete
+                                    </Button>
+                                    <Confirm
+                                        open={this.state.open}
+                                        content= {<Header as='h3'>Are you sure you want to delete {project.title}?</Header>}
+                                        cancelButton='Never mind'
+                                        confirmButton={<Button style={{ backgroundColor: 'red' }}>Delete!</Button>}
+                                        onCancel={this.handleCancel}
+                                        onConfirm={this.handleConfirm}
+                                    />
                                 </div>
                             )}
                         </div>

@@ -46,4 +46,31 @@ router.get('/project/:projectId', requireAuth, async (req, res, next) => {
     }
 })
 
+router.put('/user/:userId', requireAuth, async (req, res, next) => {
+	const { userId } = req.params;
+	const { firstName, lastName, password } = req.body;
+
+	try {
+        const user = await User.findById(userId);
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.password = password;
+		const saved = await user.save();
+		res.status(200).send(saved);
+	} catch(err){
+		res.status(500).send(err);
+	}
+});
+
+router.get('/user/:userId', requireAuth, async (req, res, next) => {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findById(userId);
+        res.status(200).send(user);
+    } catch(err){
+        res.status(404).send(err);
+    }
+})
+
 module.exports = router;

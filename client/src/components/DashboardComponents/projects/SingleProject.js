@@ -33,7 +33,7 @@ class SingleProject extends Component {
 
         return (
             <Card.Group>
-                <Card>
+                <Card fluid>
                     <Card.Content>
                         <Card.Header><Header as='h1'>{this.props.project.title}/{this.props.project.title}</Header></Card.Header>
                         <Card.Meta>{this.props.project.type}</Card.Meta>
@@ -120,7 +120,9 @@ class SingleProject extends Component {
                 <SidebarMenu />
                 <Grid columns='equal' style={{ marginLeft: '7em', marginTop: '1em' }}>
                     <Grid.Row>
+                        <Grid.Column width={4}>
                         {this.renderSingleProject()}
+                        </Grid.Column>
                     </Grid.Row>
                     <Grid.Row stretched>
                         <Grid.Column width={3}>

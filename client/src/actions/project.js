@@ -26,6 +26,7 @@ export const fetchProject = projectId => async dispatch => {
 
 export const deleteProject = projectId => async dispatch => {
     try {
+        console.log(projectId);
         const res = await axios.delete(`/api/admin/project/${projectId}`,
         { headers: { Authorization: localStorage.getItem('token') } });
         console.log(res);

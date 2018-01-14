@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Grid, Header, Button, Table, Card } from 'semantic-ui-react';
+import { Grid, Header, Button, Table, Card, Confirm } from 'semantic-ui-react';
 import SidebarMenu from '../Menu';
 import * as actions from '../../../actions/user';
 import CreateUserModal from '../modals/CreateUserModal';
 import { Link } from 'react-router-dom';
 
 class Users extends Component {
+    state = { open: false, currentUser: {} }
+
     componentWillMount() {
         this.props.getAffiliatedUsers();
         this.props.fetchUser();
@@ -21,6 +23,15 @@ class Users extends Component {
                 </div>
             )
         }
+    }
+
+    showConfirm = (userId) => {
+        this.setState({ open: true, currentUser: userId });
+    }
+    handleCancel = () => this.setState({ open: false });
+    handleConfirm = () => {
+        this.props.deleteUser(this.state.currentUser);
+        this.setState({ open: false });
     }
 
     renderUsersTable() {
@@ -69,13 +80,21 @@ class Users extends Component {
                     </Card.Content>
                     <Card.Content extra>
                         <div className='ui three buttons'>
-                            <Link to={`singleProject/${user._id}`}>
+                            <Link to={`singleUser/${user._id}`}>
                                 <Button>View</Button>
                             </Link>
                             {this.conditionallyRender(
                                 <div>
                                     <CreateUserModal editMode={true} initialValues={user} form={user._id} />
-                                    <Button>Delete</Button>
+                                    <Button onClick={() => this.showConfirm(user._id)}>Delete</Button>
+                                    <Confirm
+                                        open={this.state.open}
+                                        content= {<Header as='h3'>Are you sure you want to delete?</Header>}
+                                        cancelButton='Never mind'
+                                        confirmButton={<Button style={{ backgroundColor: 'red' }}>Delete!</Button>}
+                                        onCancel={this.handleCancel}
+                                        onConfirm={this.handleConfirm}
+                                    />                         
                                 </div>
                             )}
                         </div>
@@ -117,9 +136,7 @@ class Users extends Component {
                                     <Table.Row>
                                         <Table.HeaderCell />
                                         <Table.HeaderCell colSpan='4'>
-                                            <div style={{ float: 'right' }}>
                                                 <CreateUserModal />
-                                            </div>
                                         </Table.HeaderCell>
                                     </Table.Row>
                                 </Table.Footer>

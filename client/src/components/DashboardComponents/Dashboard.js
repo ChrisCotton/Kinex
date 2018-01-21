@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Card, Grid, List } from 'semantic-ui-react'
+import { Header, Card, Grid, List, Transition } from 'semantic-ui-react'
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import * as dashboardActions from '../../actions/dashboard';
@@ -16,11 +16,17 @@ const cardStyle = {
 }
 
 class Dashboard extends Component {
+    state = { visible: false };
+
     componentWillMount() {
         this.props.dashboardActions.fetchUser();
         this.props.dashboardActions.fetchProjects();
         this.props.dashboardActions.fetchAllUsers();
         this.props.dashboardActions.fetchIssues();
+    }
+
+    componentDidMount() {
+        setTimeout(() => this.setState({ visible: true }), 300);
     }
 
     conditionallyRender(element) {
@@ -34,56 +40,58 @@ class Dashboard extends Component {
     }
 
     renderProjects() {
-        if(this.props.projects && this.props.projects.length){
+        if (this.props.projects && this.props.projects.length) {
             return this.props.projects.map((project, index) => {
                 const date = new Date(project.created);
-                if(index === 6) return;
+                if (index === 6) return;
                 return (
                     <List.Item key={project._id}>
                         <List.Icon name='check' size='large' verticalAlign='middle' />
                         <List.Content>
-                        <Link to={`singleProject/${project._id}`}>
-                            <List.Header>{project.title}</List.Header>
-                        </Link>
+                            <Link to={`singleProject/${project._id}`}>
+                                <List.Header>{project.title}</List.Header>
+                            </Link>
                             <List.Description>Created on {date.getMonth() + 1}/{date.getDate()}/{date.getFullYear()}</List.Description>
                         </List.Content>
                     </List.Item>
                 )
             })
         }
-        return <ProjectModal/>;
+        return <ProjectModal />;
     }
 
     renderAllUsers() {
-        if(this.props.allUsers){
-            return this.props.allUsers.map(user => 
-                    <List.Item key={user._id}>
-                        <List.Icon name='check' size='large' verticalAlign='middle' />
-                        <List.Content>
+        if (this.props.allUsers) {
+            return this.props.allUsers.map(user =>
+                <List.Item key={user._id}>
+                    <List.Icon name='check' size='large' verticalAlign='middle' />
+                    <List.Content>
+                        <Link to={`singleUser/${user._id}`}>
                             <List.Header>{user.firstName} {user.lastName}</List.Header>
-                            <List.Description>{user._id}</List.Description>
-                        </List.Content>
-                    </List.Item>)
+                        </Link>
+                        <List.Description>{user._id}</List.Description>
+                    </List.Content>
+                </List.Item>)
         }
 
-        return this.conditionallyRender(<CreateUserModal/>);
+        return this.conditionallyRender(<CreateUserModal />);
     }
 
     renderAllIssues() {
-        if(this.props.allIssues && this.props.allIssues.length){
-            return this.props.allIssues.map(issue => 
-                    <List.Item key={issue._id}>
-                        <List.Icon name='check' size='large' verticalAlign='middle' />
-                        <List.Content>
-                            <Link to={`issue/${issue._id}`}><List.Header>{issue.summary}</List.Header></Link>
-                            <List.Description as='a'>{issue.description}</List.Description>
-                        </List.Content>
-                    </List.Item>
+        if (this.props.allIssues && this.props.allIssues.length) {
+            return this.props.allIssues.map(issue =>
+                <List.Item key={issue._id}>
+                    <List.Icon name='check' size='large' verticalAlign='middle' />
+                    <List.Content>
+                        <Link to={`issue/${issue._id}`}><List.Header>{issue.summary}</List.Header></Link>
+                        <List.Description as='a'>{issue.description}</List.Description>
+                    </List.Content>
+                </List.Item>
             )
         }
         return <div>
-                    <Header as='h3'>You currently do not have any issues assigned to you.</Header>
-               </div>
+            <Header as='h3'>You currently do not have any issues assigned to you.</Header>
+        </div>
     }
 
     render() {
@@ -94,9 +102,10 @@ class Dashboard extends Component {
 
         return (
             <div style={{ height: '100vh' }}>
-                    <SidebarMenu/>
-                    <Grid columns={3} style={{ marginLeft: '12em' }}>
-                        <Grid.Row>
+                <SidebarMenu />
+                <Grid columns={3} style={{ marginLeft: '12em' }}>
+                    <Grid.Row>
+                        <Transition visible={this.state.visible} animation='scale' duration={500}>
                             <Card style={cardStyle}>
                                 <Card.Content>
                                     <Card.Header><Header as='h1'>Welcome back, {user.firstName}</Header></Card.Header>
@@ -107,6 +116,8 @@ class Dashboard extends Component {
                                     </List>
                                 </Card.Content>
                             </Card>
+                        </Transition>
+                        <Transition visible={this.state.visible} animation='scale' duration={500}>
                             <Card style={cardStyle}>
                                 <Card.Content>
                                     <Card.Header><Header as='h1'>Your Projects</Header></Card.Header>
@@ -117,6 +128,8 @@ class Dashboard extends Component {
                                     </List>
                                 </Card.Content>
                             </Card>
+                        </Transition>
+                        <Transition visible={this.state.visible} transitionOnMount={true} animation='scale' duration={500}>
                             <Card style={cardStyle}>
                                 <Card.Content>
                                     <Card.Header><Header as='h1'>All Users</Header></Card.Header>
@@ -127,8 +140,9 @@ class Dashboard extends Component {
                                     </List>
                                 </Card.Content>
                             </Card>
-                        </Grid.Row>
-                    </Grid>
+                        </Transition>
+                    </Grid.Row>
+                </Grid>
             </div>
         )
     }

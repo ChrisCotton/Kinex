@@ -11,7 +11,11 @@ const formProps = {};
 class CreateUserModal extends Component {
     constructor(props) {
         super(props);
+        this.state = { modalOpen: false };
     }
+
+    handleOpen = () => this.setState({ modalOpen: true });
+    handleClose = () => this.setState({ modalOpen: false });
 
     renderFields() {
         if (this.props.editMode === true) {
@@ -41,19 +45,25 @@ class CreateUserModal extends Component {
         if (this.props.editMode) {
             formProps.title = 'Edit User';
             formProps.action = 'Update';
-            formProps.method = this.props.editUser;
-            return <Button>Edit</Button>
+            formProps.method = (user) => {
+                this.props.editUser(user);
+                this.handleClose();
+            }
+            return <Button onClick={this.handleOpen}>Edit</Button>
         }
 
         formProps.title = 'Create a New User';
         formProps.action = 'Submit';
-        formProps.method = this.props.createUser;
-        return <Button primary>Create New User</Button>
+        formProps.method = (values) => {
+            this.props.createUser(values);
+            this.handleClose();
+        }
+        return <Button primary onClick={this.handleOpen}>Create New User</Button>
     }
 
     render() {
         return (
-            <Modal trigger={this.renderButton()}>
+            <Modal open={this.state.modalOpen} onClose={this.handleClose} trigger={this.renderButton()}>
                 <Modal.Header>{formProps.title}</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>

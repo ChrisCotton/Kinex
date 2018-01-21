@@ -5,6 +5,7 @@ const passport = require('passport');
 const requireAuth = passport.authenticate('jwt', { session: false });
 const Project = mongoose.model('Project');
 const User = mongoose.model('User');
+const Feed = mongoose.model('Feed');
 
 router.get('/current_user', requireAuth, (req, res, next) => {
     const { firstName, lastName, createdUsers, isAdmin } = req.user;
@@ -61,6 +62,24 @@ router.put('/user/:userId', requireAuth, async (req, res, next) => {
 		res.status(500).send(err);
 	}
 });
+
+router.get('/feed', requireAuth, async (req, res, next) => {
+    if(req.user.isAdmin){
+        try {
+            const feed = await Feed.find({ createdBy: req.user._id });
+            res.send(feed);
+        } catch(err){
+            res.send(err);
+        }   
+    } else {
+        try {
+            const feed = await Feed.find({ createdBy: req.user.createdBy });
+            res.send(feed);
+        } catch(err){
+            res.send(err);
+        }
+    }    
+})
 
 router.get('/user/:userId', requireAuth, async (req, res, next) => {
     const { userId } = req.params;

@@ -16,7 +16,9 @@ import {
     DELETE_USER,
     EDIT_USER,
     GET_SINGLE_USER,
-    FETCH_USERS_ISSUES
+    FETCH_USERS_ISSUES,
+    EDIT_ISSUE,
+    GET_FEED
 } from '../actions/types';
 
 export default function (state = {}, action) {
@@ -47,6 +49,14 @@ export default function (state = {}, action) {
             }
         case CREATE_ISSUE:
             return { ...state, projectIssues: [...state.projectIssues, action.payload.data] };
+        case EDIT_ISSUE:
+            return { ...state, projectIssues: [ ...state.projectIssues.map(issue => {
+                if(issue._id !== action.payload.data._id){
+                    return issue;
+                } else if(issue._id === action.payload.data._id){
+                    return { ...issue, ...action.payload.data };
+                }
+            }) ] }
         case FETCH_PROJECT:
             return { ...state, project: action.payload.data };
         case GET_AFFILIATED:
@@ -75,6 +85,8 @@ export default function (state = {}, action) {
             return { ...state, currentUser: action.payload.data };
         case FETCH_USERS_ISSUES:
             return { ...state, usersIssues: action.payload.data };
+        case GET_FEED:
+            return { ...state, feed: action.payload.data };
         default:
             return state;
     }

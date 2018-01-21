@@ -12,6 +12,7 @@ const cors = require('cors');
 require('./models/User');
 require('./models/Project');
 require('./models/Issue');
+require('./models/Feed');
 
 mongoose.connect(keys.mongoURI, (err) => {
 	if(err) throw err

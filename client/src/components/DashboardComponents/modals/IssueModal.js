@@ -8,10 +8,16 @@ import { bindActionCreators } from 'redux';
 import * as userActions from '../../../actions/user';
 import * as projectActions from '../../../actions/project';
 
+const formProps = {}; 
+
 class IssueModal extends Component {
     constructor(props){
         super(props);
+        this.state = { modalOpen: false };
     }
+
+    handleOpen = () => this.setState({ modalOpen: true });
+    handleClose = () => this.setState({ modalOpen: false });
 
     componentWillMount(){
         this.props.userActions.getAffiliatedUsers();
@@ -36,18 +42,35 @@ class IssueModal extends Component {
         )
     }
 
+    renderButton(){
+        if(this.props.editMode){
+            formProps.title = 'Edit Issue';
+            formProps.action = 'Update';
+            formProps.method = (issue) => {
+                this.props.projectActions.editIssue(issue);
+                this.handleClose();
+            }
+            return <Button onClick={this.handleOpen}>Edit</Button>
+        } else if(this.props.editMode === false){
+            formProps.title = 'Create a New Issue';
+            formProps.action = 'Submit';
+            formProps.method = (values) => {
+                this.props.projectActions.createIssue(values, this.props.projectId);
+                this.handleClose();
+            }
+            return <Button primary onClick={this.handleOpen}>Create New Issue</Button>
+        }
+    }
+
     render() {
         return (
-            <Modal trigger={<Button primary>Create New Issue</Button>}>
-                <Modal.Header>Create a New Issue</Modal.Header>
+            <Modal open={this.state.modalOpen} onClose={this.handleClose} trigger={this.renderButton()}>
+                <Modal.Header>{formProps.title}</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
-                        <Form onSubmit={ 
-                            this.props.handleSubmit(values => 
-                            this.props.projectActions.createIssue(values, this.props.projectId)) 
-                        }>
+                        <Form onSubmit={this.props.handleSubmit(values => { formProps.method(values) })}>
                             {this.renderFields()}
-                            <Button primary type='submit'>Submit</Button>
+                            <Button primary type='submit'>{formProps.action}</Button>
                         </Form>
                     </Modal.Description>
                 </Modal.Content>
@@ -84,5 +107,6 @@ IssueModal = connect(mapStateToProps, mapDispatchToProps)(IssueModal);
 
 export default reduxForm({
     validate,
-    form: 'issueForm'
+    enableReinitialize: true,
+    form: 'issueModal'
 })(IssueModal);

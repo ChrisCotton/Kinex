@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { CREATE_PROJECT, FETCH_PROJECT, DELETE_PROJECT, EDIT_PROJECT,
-        FETCH_PROJECT_ISSUES, CREATE_ISSUE, VIEW_ISSUE, FETCH_ISSUE
+        FETCH_PROJECT_ISSUES, CREATE_ISSUE, VIEW_ISSUE, FETCH_ISSUE,
+        EDIT_ISSUE
 } from './types';
 
 export const createProject = values => async dispatch => {
@@ -68,7 +69,6 @@ export const fetchIssue = issueId => async dispatch => {
 }
 
 export const createIssue = (values, projectId) => async dispatch => {
-    console.log(values);
     try {
         const res = await axios.post(`/api/issue/createIssue/${projectId}`, values,
         { headers: { Authorization: localStorage.getItem('token') } });
@@ -76,6 +76,16 @@ export const createIssue = (values, projectId) => async dispatch => {
     } catch(err){
         console.log(err);
     }
+}
+
+export const editIssue = issue => async dispatch => {
+    try {
+        const res = await axios.put(`/api/issue/editIssue/${issue._id}`, issue,
+        { headers: { Authorization: localStorage.getItem('token') } });
+        dispatch({ type: EDIT_ISSUE, payload: res });
+    } catch(err){
+        console.log(err);
+    }   
 }
 
 export const viewIssue = projectId => dispatch => {

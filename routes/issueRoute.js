@@ -77,6 +77,10 @@ router.put('/editIssue/:issueId', async (req, res, next) => {
     try {
         const issue = await Issue.findById(issueId);
         issue.issueType = issueType;
+        issue.summary = summary;
+        issue.description = description;
+        issue.priority = priority;
+        issue.assignee = assignee;
 
         const saved = await issue.save();
         res.status(200).send(saved);

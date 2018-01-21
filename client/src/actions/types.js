@@ -22,3 +22,5 @@ export const VIEW_ISSUE = 'VIEW_ISSUE';
 export const FETCH_ISSUE = 'FETCH_ISSUE';
 export const GET_SINGLE_USER = 'GET_SINGLE_USER';
 export const FETCH_USERS_ISSUES = 'FETCH_USERS_ISSUES';
+export const EDIT_ISSUE = 'EDIT_ISSUE';
+export const GET_FEED = 'GET_FEED';

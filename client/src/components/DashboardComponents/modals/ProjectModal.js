@@ -11,7 +11,11 @@ const formProps = {};
 class ProjectModal extends Component {
     constructor(props){
         super(props);
+        this.state = { modalOpen: false };
     }
+
+    handleOpen = () => this.setState({ modalOpen: true });
+    handleClose = () => this.setState({ modalOpen: false });
 
     renderFields() {
         return projectFields.map(project =>
@@ -26,19 +30,25 @@ class ProjectModal extends Component {
         if(this.props.editMode){
             formProps.title = 'Edit Project';
             formProps.action = 'Update';
-            formProps.method = this.props.editProject;
-            return <Button>Edit</Button>
+            formProps.method = (project) => {
+                this.props.editProject(project);
+                this.handleClose();
+            }
+            return <Button onClick={this.handleOpen}>Edit</Button>
         }
 
         formProps.title = 'Create a New Project';
         formProps.action = 'Submit';
-        formProps.method = this.props.createProject;
-        return <Button primary>Create New Project</Button>
+        formProps.method = (values) => {
+            this.props.createProject(values);
+            this.handleClose();
+        }
+        return <Button primary onClick={this.handleOpen}>Create New Project</Button>
     }
 
     render() {
         return (
-            <Modal trigger={this.renderButton()}>
+            <Modal open={this.state.modalOpen} onClose={this.handleClose} trigger={this.renderButton()}>
                 <Modal.Header>{formProps.title}</Modal.Header>
                 <Modal.Content>
                     <Modal.Description>
